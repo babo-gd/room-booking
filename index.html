@@ -4,101 +4,247 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>강의실 예약</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script src="https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.js"></script>
 <style>
   :root {
-    --bg: #f6f7fb; --card: #fff; --text: #1d2130; --muted: #6b7185;
-    --line: #e2e5ee; --accent: #4f5bd5;
-    --ok: #1e8e5a; --ok-bg: #e3f5ec; --bad: #c8333a; --bad-bg: #fde8e9;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #14161d; --card: #1d2029; --text: #e8eaf2; --muted: #9aa0b4;
-      --line: #2e3240; --accent: #8b94ff;
-      --ok: #4cc38a; --ok-bg: #173226; --bad: #ff6b72; --bad-bg: #3a1c1f;
-    }
+    --hero: #3d5cf5; --hero2: #2f4ae0;
+    --page: #f7f6f4; --card: #ffffff; --fill: #f2f4f8; --fill2: #e9ecf3;
+    --t1: #191c2b; --t2: #565d75; --t3: #8f96aa;
+    --mint: #2fc2ad; --mint-bg: #e2f7f3; --mint-ink: #0f8a79;
+    --coral: #ff6b5e; --coral-bg: #ffecea; --coral-ink: #d23a2e;
+    --sun: #ffb020; --burgundy: #8a1c1c;
+    --line: #e6e8ef;
+    --sh1: 0 1px 2px rgba(23,32,74,.04), 0 8px 24px rgba(23,32,74,.07);
+    --shb: 0 10px 22px rgba(61,92,245,.32);
+    --ez: cubic-bezier(.2,.8,.2,1);
+    --pf: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text);
-         font-family: system-ui, -apple-system, "Malgun Gothic", sans-serif; line-height: 1.5; }
-  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 60px; }
-  h1 { font-size: 1.6rem; margin: 0 0 4px; }
-  h2 { font-size: 1.1rem; margin: 0 0 12px; }
-  .sub { color: var(--muted); margin: 0 0 16px; font-size: .9rem; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-          padding: 18px; margin-bottom: 16px; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 10px; }
-  label { display: flex; flex-direction: column; font-size: .8rem; color: var(--muted); gap: 4px; }
-  input { font: inherit; color: var(--text); background: var(--bg); width: 100%; min-width: 0;
-          border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
-  button { font: inherit; border: 0; border-radius: 8px; padding: 10px 16px; cursor: pointer;
-           background: var(--accent); color: #fff; }
-  button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
-  button:disabled { opacity: .5; cursor: wait; }
-  .status { font-size: .9rem; color: var(--muted); margin: 0 0 16px; }
-  .result { margin-top: 12px; padding: 14px; border-radius: 10px; font-size: 1.5rem; font-weight: 700;
-            text-align: center; display: none; }
-  .result.ok { display: block; color: var(--ok); background: var(--ok-bg); }
-  .result.bad { display: block; color: var(--bad); background: var(--bad-bg); }
-  .result small { display: block; font-size: .85rem; font-weight: 400; margin-top: 2px; }
-  table { width: 100%; border-collapse: collapse; font-size: .95rem; margin-top: 10px; }
-  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); }
-  .empty { color: var(--muted); margin-top: 10px; }
+  html, body { margin: 0; }
+  body { background: var(--page); color: var(--t1); font-family: var(--pf);
+         line-height: 1.5; -webkit-font-smoothing: antialiased; letter-spacing: -.01em; }
+  button, input { font: inherit; letter-spacing: inherit; }
+
+  /* ---------- 상단 파란 영역 ---------- */
+  .hero { position: relative; overflow: hidden; color: #fff;
+          background: linear-gradient(160deg, var(--hero) 0%, var(--hero2) 100%);
+          padding: 28px 24px 64px; }
+  .hero::before, .hero::after { content: ""; position: absolute; border-radius: 50%;
+          background: rgba(255,255,255,.08); }
+  .hero::before { width: 260px; height: 260px; right: -70px; top: -90px; }
+  .hero::after { width: 140px; height: 140px; right: 40px; bottom: -60px; background: rgba(255,255,255,.06); }
+  .hero-in { position: relative; max-width: 720px; margin: 0 auto; z-index: 1; }
+  .brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.35rem; letter-spacing: -.02em; }
+  .brand b { color: var(--sun); }
+  .brand .tag { font-size: .78rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+                background: rgba(255,255,255,.18); }
+  .hero h1 { font-size: 1.75rem; line-height: 1.3; margin: 26px 0 16px; font-weight: 800; letter-spacing: -.03em; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 999px;
+          background: rgba(255,255,255,.16); font-size: .88rem; font-weight: 600; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sun); }
+  .pill.ready .dot { background: #5eead4; }
+  .pill.loading .dot { animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: .3; } }
+  .hero-art { position: absolute; right: 18px; bottom: 40px; width: 108px; height: 108px; z-index: 1; }
+
+  /* ---------- 흰 시트 ---------- */
+  .sheet { background: var(--page); border-radius: 28px 28px 0 0; margin-top: -32px; position: relative;
+           min-height: 70vh; padding: 24px 16px 60px; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  .label { display: block; padding: 6px 14px; border-radius: 999px; background: var(--mint-bg);
+           color: var(--mint-ink); font-size: .78rem; font-weight: 800; letter-spacing: .04em; margin-bottom: 12px; }
+  .q { font-size: 1.15rem; font-weight: 800; margin: 0 0 14px; letter-spacing: -.02em; }
+
+  /* ---------- 메뉴 카드 (탭) ---------- */
+  .menu { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
+  .mcard { text-align: left; background: var(--card); border: 1.5px solid var(--line); border-radius: 20px;
+           padding: 14px 12px; cursor: pointer; color: var(--t1); transition: transform .2s var(--ez), border-color .2s, box-shadow .2s; }
+  .mcard:hover { transform: translateY(-2px); box-shadow: var(--sh1); }
+  .mcard.on { border-color: var(--hero); box-shadow: 0 0 0 3px rgba(61,92,245,.12); }
+  .ico { width: 42px; height: 42px; border-radius: 13px; display: grid; place-items: center; color: #fff; margin-bottom: 10px; }
+  .ico svg { width: 22px; height: 22px; }
+  .i-blue { background: var(--hero); } .i-mint { background: var(--mint); } .i-sun { background: var(--sun); } .i-red { background: var(--burgundy); }
+  .mcard strong { display: block; font-size: 1rem; font-weight: 800; }
+  .mcard span { display: block; font-size: .76rem; color: var(--t3); margin-top: 2px; }
+
+  /* ---------- 패널 ---------- */
+  .panel { display: none; background: var(--card); border-radius: 24px; padding: 20px 18px; box-shadow: var(--sh1); }
+  .panel.on { display: block; animation: up .35s var(--ez); }
+  @keyframes up { from { opacity: 0; transform: translateY(8px); } }
+  .panel h2 { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 800; margin: 0 0 16px; }
+  .panel h2 .ico { width: 34px; height: 34px; border-radius: 11px; margin: 0; }
+  .panel h2 .ico svg { width: 18px; height: 18px; }
+
+  .field { margin-bottom: 14px; }
+  .field > .fl { display: block; font-size: .82rem; font-weight: 700; color: var(--t2); margin-bottom: 7px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 7px; }
+  .chip { border: 0; background: var(--fill); color: var(--t2); border-radius: 999px; padding: 7px 14px;
+          font-size: .9rem; font-weight: 700; cursor: pointer; transition: background .15s, color .15s; }
+  .chip:hover { background: var(--fill2); }
+  .chip.on { background: var(--hero); color: #fff; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  input { width: 100%; min-width: 0; border: 1.5px solid transparent; background: var(--fill); color: var(--t1);
+          border-radius: 14px; padding: 12px 14px; font-size: 1rem; font-weight: 600; outline: none; transition: border-color .15s, background .15s; }
+  input::placeholder { color: var(--t3); font-weight: 500; }
+  input:focus { border-color: var(--hero); background: #fff; }
+  .chips + input { padding: 8px 12px; font-size: .9rem; border-radius: 12px; background: transparent; border-color: var(--line); }
+  .chips + input:focus { background: #fff; border-color: var(--hero); }
+  .hint { font-size: .74rem; color: var(--t3); margin-top: 5px; }
+
+  .btn { width: 100%; border: 0; border-radius: 16px; padding: 15px; font-size: 1.05rem; font-weight: 800;
+         background: var(--hero); color: #fff; cursor: pointer; box-shadow: var(--shb); margin-top: 6px;
+         transition: transform .15s var(--ez), opacity .15s; }
+  .btn:active { transform: scale(.98); }
+  .btn.mint { background: var(--mint); box-shadow: 0 10px 22px rgba(47,194,173,.3); }
+  .btn.sun { background: var(--sun); box-shadow: 0 10px 22px rgba(255,176,32,.3); }
+  .btn:disabled { opacity: .45; cursor: wait; box-shadow: none; }
+
+  /* ---------- 결과 ---------- */
+  .result { display: none; margin-top: 16px; padding: 18px; border-radius: 18px; text-align: center; }
+  .result.ok, .result.bad { display: block; animation: pop .35s var(--ez); }
+  @keyframes pop { from { transform: scale(.94); opacity: 0; } }
+  .result.ok { background: var(--mint-bg); color: var(--mint-ink); }
+  .result.bad { background: var(--coral-bg); color: var(--coral-ink); }
+  .result .big { font-size: 1.7rem; font-weight: 900; letter-spacing: -.02em; }
+  .result small { display: block; font-size: .86rem; font-weight: 600; margin-top: 4px; opacity: .85; }
+
+  /* ---------- 시간표 ---------- */
+  .sched { margin-top: 18px; }
+  .sched-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .sched-head strong { font-size: 1rem; font-weight: 800; }
+  .sched-head span { font-size: .8rem; color: var(--t3); font-weight: 600; }
+  .bar { position: relative; height: 34px; border-radius: 12px; background: var(--fill); overflow: hidden; margin-bottom: 4px; }
+  .bar i { position: absolute; top: 4px; bottom: 4px; border-radius: 9px; background: var(--hero); opacity: .9; }
+  .bar i:nth-child(3n+2) { background: var(--mint); } .bar i:nth-child(3n) { background: var(--sun); }
+  .ticks { display: flex; justify-content: space-between; font-size: .7rem; color: var(--t3); font-weight: 600; margin-bottom: 12px; }
+  .slot { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--fill); margin-bottom: 8px; }
+  .slot .tm { font-weight: 800; font-size: .98rem; min-width: 112px; }
+  .slot .nm { color: var(--t2); font-weight: 600; }
+  .slot .tg { margin-left: auto; font-size: .74rem; font-weight: 700; color: var(--hero); background: #e8edff; padding: 3px 9px; border-radius: 999px; }
+  .empty { text-align: center; padding: 22px; color: var(--t3); font-weight: 600; background: var(--fill); border-radius: 16px; }
+
+  .rules { margin-top: 22px; background: var(--card); border-radius: 22px; padding: 18px; box-shadow: var(--sh1); }
+  .rules ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .rules li { display: flex; gap: 10px; font-size: .9rem; color: var(--t2); }
+  .rules li b { flex: 0 0 22px; height: 22px; border-radius: 7px; background: var(--fill); color: var(--hero);
+                display: grid; place-items: center; font-size: .75rem; }
+  .reset { display: block; margin: 20px auto 0; background: none; border: 0; color: var(--t3); font-weight: 600;
+           text-decoration: underline; cursor: pointer; font-size: .86rem; }
+  .foot { text-align: center; color: var(--t3); font-size: .76rem; margin-top: 14px; }
+  code { font-family: inherit; font-weight: 700; color: var(--t2); }
+
+  @media (max-width: 420px) {
+    .hero h1 { font-size: 1.5rem; }
+    .hero-art { width: 84px; height: 84px; bottom: 44px; right: 12px; }
+    .menu { gap: 8px; }
+    .mcard { padding: 12px 10px; }
+    .mcard span { display: none; }
+    .slot .tm { min-width: 96px; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>강의실 예약 시스템</h1>
-  <p class="sub">이 페이지는 저장소의 <code>solution.py</code>를 브라우저에서 그대로 실행합니다. 예약 규칙은 모두 <code>solution.py</code>가 판단합니다.</p>
-  <p class="status" id="status">⏳ 파이썬 불러오는 중… (처음엔 5~10초 걸려요)</p>
 
-  <datalist id="rooms"><option value="A101"><option value="A102"><option value="B201"></datalist>
-  <datalist id="days"><option value="월"><option value="화"><option value="수"><option value="목"><option value="금"></datalist>
+<header class="hero">
+  <div class="hero-in">
+    <div class="brand"><span>ROOM<b>!</b>T</span> <span class="tag">강의실 예약</span></div>
+    <h1>빈 강의실,<br>지금 바로 잡아요</h1>
+    <div class="pill loading" id="pill"><span class="dot"></span><span id="status">파이썬 불러오는 중… (5~10초)</span></div>
+  </div>
+  <!-- 강의실 문 일러스트 -->
+  <svg class="hero-art" viewBox="0 0 120 120" aria-hidden="true">
+    <ellipse cx="60" cy="112" rx="38" ry="6" fill="rgba(0,0,0,.15)"/>
+    <rect x="26" y="14" width="68" height="96" rx="10" fill="#fff"/>
+    <rect x="34" y="22" width="52" height="34" rx="6" fill="#e8edff"/>
+    <rect x="34" y="62" width="52" height="40" rx="6" fill="#f2f4f8"/>
+    <circle cx="78" cy="82" r="4.5" fill="#ffb020"/>
+    <text x="60" y="45" text-anchor="middle" font-family="Pretendard Variable, sans-serif" font-weight="900" font-size="15" fill="#3d5cf5">A101</text>
+  </svg>
+</header>
 
-  <section class="card">
-    <h2>1. 예약하기</h2>
-    <div class="grid">
-      <label>강의실<input id="bRoom" list="rooms" value="A101"></label>
-      <label>요일<input id="bDay" list="days" value="월"></label>
-      <label>시작 (시)<input id="bStart" inputmode="decimal" placeholder="예: 10"></label>
-      <label>끝 (시)<input id="bEnd" inputmode="decimal" placeholder="예: 12"></label>
-      <label>이름<input id="bName" placeholder="예: 김철수"></label>
+<main class="sheet">
+  <div class="wrap">
+    <span class="label">MENU</span>
+    <p class="q">무엇을 할까요?</p>
+
+    <div class="menu" role="tablist">
+      <button class="mcard on" data-tab="book" onclick="tab('book')">
+        <div class="ico i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg></div>
+        <strong>예약</strong><span>강의실 잡기</span>
+      </button>
+      <button class="mcard" data-tab="cancel" onclick="tab('cancel')">
+        <div class="ico i-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M8 3v4M16 3v4M3 10h18M10 14l4 4M14 14l-4 4"/></svg></div>
+        <strong>취소</strong><span>내 예약 취소</span>
+      </button>
+      <button class="mcard" data-tab="sched" onclick="tab('sched')">
+        <div class="ico i-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <strong>시간표</strong><span>예약 현황 보기</span>
+      </button>
     </div>
-    <button data-py disabled onclick="doBook()">예약</button>
-    <div class="result" id="bookResult"></div>
-  </section>
 
-  <section class="card">
-    <h2>2. 취소하기</h2>
-    <div class="grid">
-      <label>강의실<input id="cRoom" list="rooms" value="A101"></label>
-      <label>요일<input id="cDay" list="days" value="월"></label>
-      <label>시작 (시)<input id="cStart" inputmode="decimal" placeholder="예: 10"></label>
-      <label>이름<input id="cName" placeholder="예약한 사람 이름"></label>
-    </div>
-    <button data-py disabled onclick="doCancel()">취소</button>
-    <div class="result" id="cancelResult"></div>
-  </section>
+    <!-- 1. 예약 -->
+    <section class="panel on" id="p-book">
+      <h2><span class="ico i-blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>강의실 예약하기</h2>
+      <div class="field"><span class="fl">강의실</span><div class="chips" data-for="bRoom"></div><input id="bRoom" value="A101" placeholder="강의실"></div>
+      <div class="field"><span class="fl">요일</span><div class="chips" data-for="bDay"></div><input id="bDay" value="월" placeholder="요일"></div>
+      <div class="field"><span class="fl">시간</span>
+        <div class="two">
+          <input id="bStart" inputmode="decimal" placeholder="시작 (예: 10)">
+          <input id="bEnd" inputmode="decimal" placeholder="끝 (예: 12)">
+        </div>
+        <div class="hint">9시~21시 · 한 번에 최대 3시간</div>
+      </div>
+      <div class="field"><span class="fl">이름</span><input id="bName" placeholder="예: 김철수"></div>
+      <button class="btn" data-py disabled onclick="doBook()">예약하기</button>
+      <div class="result" id="bookResult"></div>
+      <div class="sched" id="bookSched"></div>
+    </section>
 
-  <section class="card">
-    <h2>3. 시간표 보기</h2>
-    <div class="grid">
-      <label>강의실<input id="sRoom" list="rooms" value="A101"></label>
-      <label>요일<input id="sDay" list="days" value="월"></label>
-    </div>
-    <button data-py disabled onclick="doSchedule()">시간표 보기</button>
-    <div id="schedule"></div>
-  </section>
+    <!-- 2. 취소 -->
+    <section class="panel" id="p-cancel">
+      <h2><span class="ico i-red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></span>예약 취소하기</h2>
+      <div class="field"><span class="fl">강의실</span><div class="chips" data-for="cRoom"></div><input id="cRoom" value="A101" placeholder="강의실"></div>
+      <div class="field"><span class="fl">요일</span><div class="chips" data-for="cDay"></div><input id="cDay" value="월" placeholder="요일"></div>
+      <div class="field"><span class="fl">시작 시각</span><input id="cStart" inputmode="decimal" placeholder="예: 10"></div>
+      <div class="field"><span class="fl">이름</span><input id="cName" placeholder="예약한 사람 이름"><div class="hint">본인 예약만 취소할 수 있어요</div></div>
+      <button class="btn sun" data-py disabled onclick="doCancel()">취소하기</button>
+      <div class="result" id="cancelResult"></div>
+      <div class="sched" id="cancelSched"></div>
+    </section>
 
-  <button data-py disabled class="ghost" onclick="doReset()">전체 초기화 (예약 모두 지우기)</button>
+    <!-- 3. 시간표 -->
+    <section class="panel" id="p-sched">
+      <h2><span class="ico i-mint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg></span>시간표 보기</h2>
+      <div class="field"><span class="fl">강의실</span><div class="chips" data-for="sRoom"></div><input id="sRoom" value="A101" placeholder="강의실"></div>
+      <div class="field"><span class="fl">요일</span><div class="chips" data-for="sDay"></div><input id="sDay" value="월" placeholder="요일"></div>
+      <button class="btn mint" data-py disabled onclick="doSchedule()">시간표 보기</button>
+      <div class="sched" id="schedule"></div>
+    </section>
+
+    <section class="rules">
+      <span class="label">TIP</span>
+      <ul>
+        <li><b>1</b>강의실 A101 · A102 · B201, 월~금 9시~21시</li>
+        <li><b>2</b>한 번에 최대 3시간, 끝나는 시각에 바로 다음 예약 가능</li>
+        <li><b>3</b>한 사람은 하루 최대 2건 (강의실이 달라도 합산)</li>
+        <li><b>4</b>본인 예약만 취소할 수 있어요</li>
+      </ul>
+    </section>
+
+    <button class="reset" data-py disabled onclick="doReset()">전체 초기화 (예약 모두 지우기)</button>
+    <p class="foot">예약 규칙은 모두 저장소의 <code>solution.py</code>가 판단합니다 · 새로고침하면 예약이 지워져요</p>
+  </div>
 </main>
 
 <script>
 let py = null;
+const ROOMS = ["A101", "A102", "B201"];
+const DAYS = ["월", "화", "수", "목", "금"];
 
 // solution.py 를 받아서 파이썬 안에 파일로 넣고 import
 async function boot() {
-  const status = document.getElementById("status");
+  const status = document.getElementById("status"), pill = document.getElementById("pill");
   try {
     py = await loadPyodide();
     const src = await (await fetch("solution.py?v=" + Date.now())).text();
@@ -114,10 +260,12 @@ def call(method, args_json):
     except Exception as e:
         return json.dumps(f"ERROR: {type(e).__name__}: {e}", ensure_ascii=False)
 `);
-    status.innerHTML = '✅ 준비 완료';
+    status.textContent = "준비 완료! 예약할 수 있어요";
+    pill.className = "pill ready";
     document.querySelectorAll("[data-py]").forEach(b => b.disabled = false);
   } catch (e) {
-    status.textContent = "❌ 불러오기 실패: " + e;
+    status.textContent = "불러오기 실패: " + e;
+    pill.className = "pill";
   }
 }
 
@@ -128,7 +276,8 @@ function call(method, args) {
   return res;
 }
 
-const val = id => document.getElementById(id).value.trim();
+const $ = id => document.getElementById(id);
+const val = id => $(id).value.trim();
 
 // 입력한 시각을 그대로 숫자로 넘김 (10 → 정수, 10.5 → 소수). 판단은 solution.py가 함.
 function num(id) {
@@ -138,86 +287,117 @@ function num(id) {
   return Number.isFinite(n) ? n : s;
 }
 
+// ---------- 화면 ----------
+function tab(name) {
+  document.querySelectorAll(".mcard").forEach(c => c.classList.toggle("on", c.dataset.tab === name));
+  document.querySelectorAll(".panel").forEach(p => p.classList.toggle("on", p.id === "p-" + name));
+}
+
+// 칩을 누르면 입력칸이 채워짐 (입력칸에 직접 써도 됨)
+function makeChips() {
+  document.querySelectorAll(".chips").forEach(box => {
+    const input = $(box.dataset.for);
+    const list = /Room$/.test(box.dataset.for) ? ROOMS : DAYS;
+    for (const v of list) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "chip"; b.textContent = v;
+      b.onclick = () => { input.value = v; sync(); };
+      box.appendChild(b);
+    }
+    const sync = () => box.querySelectorAll(".chip").forEach(c => c.classList.toggle("on", c.textContent === input.value.trim()));
+    input.addEventListener("input", sync);
+    input._sync = sync;
+    sync();
+  });
+}
+function setInput(id, v) { $(id).value = v; if ($(id)._sync) $(id)._sync(); }
+
 function showResult(id, res, okText, badText, detail) {
-  const el = document.getElementById(id);
-  if (res === true) {
-    el.className = "result ok";
-    el.innerHTML = "✅ " + okText;
-  } else if (res === false) {
-    el.className = "result bad";
-    el.innerHTML = "❌ " + badText;
-  } else {
-    el.className = "result bad";
-    el.innerHTML = "❌ 실패";
-    detail = String(res);
+  const el = $(id);
+  const ok = res === true;
+  el.className = "result " + (ok ? "ok" : "bad");
+  el.innerHTML = "";
+  const big = document.createElement("div");
+  big.className = "big";
+  big.textContent = ok ? "✅ " + okText : "❌ " + badText;
+  const s = document.createElement("small");
+  s.textContent = (res === true || res === false) ? detail : String(res);
+  el.append(big, s);
+}
+
+function renderSchedule(boxId, room, day) {
+  const list = call("get_schedule", [room, day]);
+  const box = $(boxId);
+  box.innerHTML = "";
+  const head = document.createElement("div");
+  head.className = "sched-head";
+  head.innerHTML = "<strong></strong><span></span>";
+  head.children[0].textContent = `${room} · ${day}요일 시간표`;
+  head.children[1].textContent = Array.isArray(list) ? `${list.length}건` : "";
+  box.appendChild(head);
+  if (!Array.isArray(list)) { box.append(String(list)); return; }
+
+  // 9시~21시 막대
+  const bar = document.createElement("div");
+  bar.className = "bar";
+  for (const [s, e] of list) {
+    const i = document.createElement("i");
+    i.style.left = ((s - 9) / 12 * 100) + "%";
+    i.style.width = ((e - s) / 12 * 100) + "%";
+    bar.appendChild(i);
   }
-  if (detail) {
-    const s = document.createElement("small");
-    s.textContent = detail;
-    el.appendChild(s);
+  const ticks = document.createElement("div");
+  ticks.className = "ticks";
+  ticks.innerHTML = "<span>9시</span><span>12시</span><span>15시</span><span>18시</span><span>21시</span>";
+  box.append(bar, ticks);
+
+  if (list.length === 0) {
+    const p = document.createElement("div");
+    p.className = "empty";
+    p.textContent = "아직 예약이 없어요";
+    box.appendChild(p);
+    return;
+  }
+  for (const [s, e, n] of list) {
+    const row = document.createElement("div");
+    row.className = "slot";
+    const tm = document.createElement("span"); tm.className = "tm"; tm.textContent = `${s}:00 ~ ${e}:00`;
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = n;
+    const tg = document.createElement("span"); tg.className = "tg"; tg.textContent = `${e - s}시간`;
+    row.append(tm, nm, tg);
+    box.appendChild(row);
   }
 }
 
-function showSchedule(room, day) {
-  document.getElementById("sRoom").value = room;
-  document.getElementById("sDay").value = day;
-  doSchedule();
-}
-
+// ---------- 기능 ----------
 function doBook() {
   const room = val("bRoom"), day = val("bDay"), start = num("bStart"), end = num("bEnd"), name = val("bName");
   const res = call("book", [room, day, start, end, name]);
   showResult("bookResult", res, "예약 성공", "예약 실패",
-    `${name} · ${room} · ${day} · ${start ?? "?"}~${end ?? "?"}시`);
-  showSchedule(room, day);
+    `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}~${end ?? "?"}시`);
+  renderSchedule("bookSched", room, day);
 }
 
 function doCancel() {
   const room = val("cRoom"), day = val("cDay"), start = num("cStart"), name = val("cName");
   const res = call("cancel", [room, day, start, name]);
   showResult("cancelResult", res, "취소 성공", "취소 실패",
-    `${name} · ${room} · ${day} · ${start ?? "?"}시 시작`);
-  showSchedule(room, day);
+    `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}시 시작`);
+  renderSchedule("cancelSched", room, day);
 }
 
 function doSchedule() {
-  const room = val("sRoom"), day = val("sDay");
-  const list = call("get_schedule", [room, day]);
-  const box = document.getElementById("schedule");
-  box.innerHTML = "";
-  const title = document.createElement("p");
-  title.className = "empty";
-  title.textContent = `${room} · ${day}요일 시간표`;
-  box.appendChild(title);
-  if (!Array.isArray(list)) { box.append(String(list)); return; }
-  if (list.length === 0) {
-    const p = document.createElement("p");
-    p.className = "empty";
-    p.textContent = "예약이 없습니다.";
-    box.appendChild(p);
-    return;
-  }
-  const table = document.createElement("table");
-  table.innerHTML = "<thead><tr><th>시간</th><th>예약자</th></tr></thead>";
-  const tbody = document.createElement("tbody");
-  for (const [s, e, n] of list) {
-    const tr = document.createElement("tr");
-    const t1 = document.createElement("td"); t1.textContent = `${s}:00 ~ ${e}:00`;
-    const t2 = document.createElement("td"); t2.textContent = n;
-    tr.append(t1, t2);
-    tbody.appendChild(tr);
-  }
-  table.appendChild(tbody);
-  box.appendChild(table);
+  renderSchedule("schedule", val("sRoom"), val("sDay"));
 }
 
 function doReset() {
   if (!confirm("모든 예약을 지울까요?")) return;
   py.runPython("rb = RoomBooking()");
-  ["bookResult", "cancelResult"].forEach(id => document.getElementById(id).className = "result");
-  doSchedule();
+  ["bookResult", "cancelResult"].forEach(id => $(id).className = "result");
+  ["bookSched", "cancelSched", "schedule"].forEach(id => $(id).innerHTML = "");
 }
 
+makeChips();
 boot();
 </script>
 </body>
