@@ -476,14 +476,21 @@ async function boot() {
     py = await loadPyodide();
     const src = await (await fetch("solution.py?v=" + Date.now())).text();
     py.FS.writeFile("/home/pyodide/solution.py", src);
+    // 실패 이유 안내용 (판단은 하지 않음)
+    const ex = await (await fetch("explain.py?v=" + Date.now())).text();
+    py.FS.writeFile("/home/pyodide/explain.py", ex);
     py.runPython(`
 import json
 from solution import RoomBooking
+import explain
 rb = RoomBooking()
 
 def call(method, args_json):
     try:
-        return json.dumps(getattr(rb, method)(*json.loads(args_json)), ensure_ascii=False)
+        args = json.loads(args_json)
+        if method.startswith("explain_"):
+            return json.dumps(getattr(explain, method)(rb, *args), ensure_ascii=False)
+        return json.dumps(getattr(rb, method)(*args), ensure_ascii=False)
     except Exception as e:
         return json.dumps(f"ERROR: {type(e).__name__}: {e}", ensure_ascii=False)
 `);
@@ -615,7 +622,7 @@ function tab(name) {
   if (name === "sched" && py) doSchedule();
 }
 
-// why: 실패 이유 (solution.py의 explain_book / explain_cancel이 알려준 문장)
+// why: 실패 이유 (explain.py가 알려준 문장). 성공/실패 자체는 solution.py 결과를 따름
 function showResult(id, res, okText, badText, detail, why) {
   const el = $(id);
   const ok = res === true;
@@ -752,7 +759,7 @@ function doBook(ev) {
   const room = val("bRoom"), day = val("bDay"), start = num("bStart"), end = num("bEnd"), name = val("bName");
   const args = [room, day, start, end, name];
   const res = call("book", args);
-  // 실패하면 solution.py에게 이유를 물어봄 (실패한 예약은 저장되지 않으므로 같은 이유가 나옴)
+  // 실패하면 explain.py에게 이유를 물어봄 (실패한 예약은 저장되지 않으므로 같은 상태에서 설명됨)
   const why = res === false ? call("explain_book", args) : null;
   showResult("bookResult", res, "예약 성공", "예약 실패",
     `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}~${end ?? "?"}시`, why);
@@ -764,8 +771,9 @@ function doCancel(ev) {
   const room = val("cRoom"), day = val("cDay"), start = num("cStart"), name = val("cName");
   const args = [room, day, start, name];
   const before = call("get_schedule", [room, day]);
-  const why = call("explain_cancel", args);
   const res = call("cancel", args);
+  // 실패하면 이유를 물어봄 (실패한 취소는 아무것도 바꾸지 않으므로 같은 상태에서 설명됨)
+  const why = res === false ? call("explain_cancel", args) : null;
   const removed = res === true && Array.isArray(before) ? before.find(s => s[0] === start) : null;
   showResult("cancelResult", res, "취소 성공", "취소 실패",
     `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}시 시작`, res === false ? why : null);
