@@ -120,14 +120,6 @@
   .hr:active { transform: scale(.9); }
   .hr.in { background: color-mix(in srgb, var(--c) 16%, #fff); color: var(--c); }
   .hr.s, .hr.e { background: var(--c); color: #fff; box-shadow: 0 4px 10px color-mix(in srgb, var(--c) 35%, transparent); }
-  .hours.five { grid-template-columns: repeat(5, 1fr); }
-  .hours.six { grid-template-columns: repeat(6, 1fr); }
-  .hr.out { background: transparent; border: 1.5px dashed var(--line); color: var(--t3); }
-  .hr.out.s, .hr.out.e { background: var(--coral); border-color: var(--coral); color: #fff; box-shadow: 0 4px 10px rgba(255,107,94,.35); }
-  .hr.out.in { background: var(--coral-bg); color: var(--coral-ink); }
-  .legend { display: flex; gap: 12px; margin-top: 8px; font-size: .72rem; color: var(--t3); font-weight: 600; }
-  .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; background: var(--fill); }
-  .legend i.o { background: transparent; border: 1.5px dashed var(--t3); }
   .range { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; padding: 12px;
            border-radius: 14px; background: var(--fill); font-weight: 800; font-size: 1.05rem; }
   .range .arrow { color: var(--t3); font-weight: 600; }
@@ -184,39 +176,6 @@
   .result.bad .badge { background: var(--coral); box-shadow: 0 8px 18px rgba(255,107,94,.35); }
   .result .big { font-size: 1.6rem; font-weight: 900; letter-spacing: -.02em; }
   .result small { display: block; font-size: .86rem; font-weight: 600; margin-top: 4px; opacity: .85; }
-  .result .why { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: #fff; color: var(--coral-ink);
-                 font-size: .95rem; font-weight: 700; line-height: 1.45; text-align: left; display: flex; gap: 8px; }
-  .result .why::before { content: "!"; flex: none; width: 20px; height: 20px; border-radius: 50%; background: var(--coral); color: #fff;
-                         font-size: .75rem; font-weight: 900; display: grid; place-items: center; margin-top: 1px; }
-
-  /* ---------- 알림 (토스트) ---------- */
-  .toast { position: fixed; left: 50%; top: 16px; z-index: 50; width: min(420px, calc(100% - 32px));
-           transform: translate(-50%, -140%); transition: transform .45s var(--ez); pointer-events: none;
-           display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 18px;
-           background: #fff; box-shadow: var(--sh2); border-left: 6px solid var(--mint); }
-  .toast.show { transform: translate(-50%, 0); }
-  .toast.bad { border-left-color: var(--coral); }
-  .toast .ti { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
-               color: #fff; font-weight: 900; background: var(--mint); }
-  .toast.bad .ti { background: var(--coral); }
-  .toast b { display: block; font-size: 1rem; font-weight: 800; }
-  .toast.bad b { color: var(--coral-ink); }
-  .toast .tmsg { margin: 2px 0 0; font-size: .86rem; color: var(--t2); font-weight: 600; line-height: 1.4; }
-
-  /* 시간표 강조 */
-  .sched-head { flex-wrap: wrap; gap: 6px; }
-  .sched-head strong small { display: block; font-size: .74rem; color: var(--coral-ink); font-weight: 700; }
-  .sort-badge { white-space: nowrap; }
-  .sort-badge { display: inline-flex; align-items: center; gap: 4px; font-size: .72rem; font-weight: 800; color: var(--mint-ink);
-                background: var(--mint-bg); padding: 3px 9px; border-radius: 999px; }
-  .slot .ord { flex: none; width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center;
-               font-size: .72rem; font-weight: 800; color: var(--t2); background: var(--card); }
-  .slot.new { background: #e8edff; box-shadow: inset 0 0 0 1.5px var(--hero); animation: pop .4s var(--ez); }
-  .slot.new .tg { background: var(--hero); color: #fff; }
-  .slot.gone { background: var(--coral-bg); animation: pop .4s var(--ez); }
-  .slot.gone .tm, .slot.gone .nm { text-decoration: line-through; color: var(--coral-ink); opacity: .75; }
-  .slot.gone .tg { background: var(--coral); color: #fff; }
-  .slot.gone .ord { color: var(--coral-ink); }
 
   /* ---------- 시간표 (요약) ---------- */
   .sched:empty { display: none; }
@@ -358,10 +317,9 @@
 
       <div class="box">
         <p class="step"><i>3</i>시간<small>시작 → 끝 순서로 눌러요</small></p>
-        <div class="hours five" data-hours="range" data-start="bStart" data-end="bEnd"></div>
-        <div class="legend"><span><i></i>운영 시간 (9~21시)</span><span><i class="o"></i>운영 시간 밖</span></div>
+        <div class="hours" data-hours="range" data-start="bStart" data-end="bEnd"></div>
         <div class="range" id="bRange"></div>
-        <div class="hint">한 번에 최대 3시간 · 운영 시간 밖을 고르면 왜 안 되는지 알려줘요</div>
+        <div class="hint">9시~21시 · 한 번에 최대 3시간</div>
       </div>
 
       <div class="box">
@@ -400,7 +358,7 @@
 
       <div class="box">
         <p class="step"><i>3</i>시작 시각</p>
-        <div class="hours six" data-hours="single" data-start="cStart"></div>
+        <div class="hours" data-hours="single" data-start="cStart"></div>
       </div>
 
       <div class="box">
@@ -452,8 +410,6 @@
       <div class="tip-grid" id="tipGrid"></div>
     </section>
 
-    <div class="toast" id="toast" role="status" aria-live="polite"><span class="ti"></span><div><b></b><p class="tmsg"></p></div></div>
-
     <button class="reset" data-py disabled onclick="doReset()">전체 초기화 (예약 모두 지우기)</button>
     <p class="foot">예약 규칙은 모두 저장소의 <code>solution.py</code>가 판단합니다 · 새로고침하면 예약이 지워져요</p>
   </div>
@@ -466,8 +422,6 @@ const ROOMS = [["A101", "A동 · 1층"], ["A102", "A동 · 1층"], ["B201", "B�
 // 토·일도 고를 수 있게 둠 (예약이 되는지는 solution.py가 판단)
 const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 const HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-// 예약 시간 버튼: 운영 시간 밖(8시, 22시)도 눌러볼 수 있게 둠. 되는지는 solution.py가 판단
-const BOOK_HOURS = [8, ...HOURS, 22];
 
 // ---------- 파이썬(solution.py) 불러오기 ----------
 async function boot() {
@@ -476,21 +430,14 @@ async function boot() {
     py = await loadPyodide();
     const src = await (await fetch("solution.py?v=" + Date.now())).text();
     py.FS.writeFile("/home/pyodide/solution.py", src);
-    // 실패 이유 안내용 (판단은 하지 않음)
-    const ex = await (await fetch("explain.py?v=" + Date.now())).text();
-    py.FS.writeFile("/home/pyodide/explain.py", ex);
     py.runPython(`
 import json
 from solution import RoomBooking
-import explain
 rb = RoomBooking()
 
 def call(method, args_json):
     try:
-        args = json.loads(args_json)
-        if method.startswith("explain_"):
-            return json.dumps(getattr(explain, method)(rb, *args), ensure_ascii=False)
-        return json.dumps(getattr(rb, method)(*args), ensure_ascii=False)
+        return json.dumps(getattr(rb, method)(*json.loads(args_json)), ensure_ascii=False)
     except Exception as e:
         return json.dumps(f"ERROR: {type(e).__name__}: {e}", ensure_ascii=False)
 `);
@@ -569,10 +516,10 @@ function buildPickers() {
   // 시간
   document.querySelectorAll("[data-hours]").forEach(box => {
     const mode = box.dataset.hours, sId = box.dataset.start, eId = box.dataset.end;
-    const list = mode === "single" ? HOURS.slice(0, -1) : BOOK_HOURS;
-    for (const h of list) {
+    for (const h of HOURS) {
+      if (mode === "single" && h === 21) continue;
       const b = document.createElement("button");
-      b.type = "button"; b.className = "hr" + (h < 9 || h > 21 ? " out" : ""); b.textContent = h; b.dataset.h = h;
+      b.type = "button"; b.className = "hr"; b.textContent = h; b.dataset.h = h;
       b.onclick = () => {
         if (mode === "single") { setInput(sId, h); return; }
         const s = num(sId), e = num(eId);
@@ -622,8 +569,7 @@ function tab(name) {
   if (name === "sched" && py) doSchedule();
 }
 
-// why: 실패 이유 (explain.py가 알려준 문장). 성공/실패 자체는 solution.py 결과를 따름
-function showResult(id, res, okText, badText, detail, why) {
+function showResult(id, res, okText, badText, detail) {
   const el = $(id);
   const ok = res === true;
   el.className = "result";
@@ -632,53 +578,19 @@ function showResult(id, res, okText, badText, detail, why) {
   el.innerHTML = `<div class="badge">${ok ? "✓" : "✕"}</div><div class="big"></div><small></small>`;
   el.querySelector(".big").textContent = ok ? okText : badText;
   el.querySelector("small").textContent = (res === true || res === false) ? detail : String(res);
-  if (!ok && why) {
-    const w = document.createElement("div"); w.className = "why"; w.textContent = why; el.appendChild(w);
-  }
-  toast(ok, ok ? okText : badText, ok ? detail : (why || detail));
   if (navigator.vibrate && window._tapped) { try { navigator.vibrate(ok ? 15 : [30, 40, 30]); } catch (_) {} }
 }
 
-let toastTimer = null;
-function toast(ok, title, msg) {
-  const t = $("toast");
-  t.className = "toast" + (ok ? "" : " bad");
-  t.querySelector(".ti").textContent = ok ? "✓" : "!";
-  t.querySelector("b").textContent = title;
-  t.querySelector(".tmsg").textContent = msg;
-  void t.offsetWidth;
-  t.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove("show"), 3800);
-}
-
-function slotRow(order, [s, e, n], kind) {
-  const row = document.createElement("div");
-  row.className = "slot" + (kind ? " " + kind : "");
-  const od = document.createElement("span"); od.className = "ord"; od.textContent = order;
-  const tm = document.createElement("span"); tm.className = "tm"; tm.textContent = `${s}:00 ~ ${e}:00`;
-  const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = n;
-  const tg = document.createElement("span"); tg.className = "tg";
-  tg.textContent = kind === "new" ? "방금 예약" : kind === "gone" ? "방금 취소" : `${e - s}시간`;
-  row.append(od, tm, nm, tg);
-  return row;
-}
-
 // 예약/취소 아래에 나오는 간단한 시간표
-// opts.added: 방금 예약한 것, opts.removed: 방금 취소한 것 (강조 표시용)
-function renderSchedule(boxId, room, day, opts = {}) {
+function renderSchedule(boxId, room, day) {
   const list = call("get_schedule", [room, day]);
   const box = $(boxId);
   box.innerHTML = "";
   const head = document.createElement("div");
   head.className = "sched-head";
-  head.innerHTML = "<strong></strong><span class='sort-badge'></span>";
+  head.innerHTML = "<strong></strong><span></span>";
   head.children[0].textContent = `${room} · ${day}요일 시간표`;
-  if (opts.removed) {
-    const sm = document.createElement("small"); sm.textContent = "취소가 반영된 시간표예요";
-    head.children[0].appendChild(sm);
-  }
-  head.children[1].textContent = Array.isArray(list) ? `⇅ 시작 시각 순 · ${list.length}건` : "";
+  head.children[1].textContent = Array.isArray(list) ? `${list.length}건` : "";
   box.appendChild(head);
   if (!Array.isArray(list)) { box.append(String(list)); return; }
   const bar = document.createElement("div");
@@ -693,17 +605,15 @@ function renderSchedule(boxId, room, day, opts = {}) {
   ticks.className = "ticks";
   ticks.innerHTML = "<span>9시</span><span>12시</span><span>15시</span><span>18시</span><span>21시</span>";
   box.append(bar, ticks);
-  const same = (a, b) => a && b && a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
-  // solution.py가 돌려준 순서 그대로 보여줌. 방금 취소한 것은 그 시각 자리에 줄을 그어 함께 보여줌
-  let k = 0, ghostShown = false;
-  const ghost = () => { if (opts.removed && !ghostShown) { box.appendChild(slotRow("–", opts.removed, "gone")); ghostShown = true; } };
-  for (const slot of list) {
-    if (opts.removed && !ghostShown && opts.removed[0] < slot[0]) ghost();
-    box.appendChild(slotRow(++k, slot, same(slot, opts.added) ? "new" : ""));
-  }
-  ghost();
   if (list.length === 0) {
-    const p = document.createElement("div"); p.className = "empty"; p.textContent = "남은 예약이 없어요"; box.appendChild(p);
+    const p = document.createElement("div"); p.className = "empty"; p.textContent = "아직 예약이 없어요"; box.appendChild(p); return;
+  }
+  for (const [s, e, n] of list) {
+    const row = document.createElement("div"); row.className = "slot";
+    const tm = document.createElement("span"); tm.className = "tm"; tm.textContent = `${s}:00 ~ ${e}:00`;
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = n;
+    const tg = document.createElement("span"); tg.className = "tg"; tg.textContent = `${e - s}시간`;
+    row.append(tm, nm, tg); box.appendChild(row);
   }
 }
 
@@ -715,9 +625,9 @@ function renderTimeline(room, day) {
   box.innerHTML = "";
   const wrap = document.createElement("div"); wrap.className = "tl-wrap";
   const top = document.createElement("div"); top.className = "tl-top";
-  top.innerHTML = "<b></b><span class='sort-badge'></span>";
+  top.innerHTML = "<b></b><span></span>";
   top.children[0].textContent = `${room} · ${day}요일`;
-  top.children[1].textContent = Array.isArray(list) ? `⇅ 시작 시각 순 · ${list.length}건` : "";
+  top.children[1].textContent = Array.isArray(list) ? `예약 ${list.length}건` : "";
   wrap.appendChild(top);
   if (!Array.isArray(list)) { wrap.append(String(list)); box.appendChild(wrap); return; }
 
@@ -726,7 +636,13 @@ function renderTimeline(room, day) {
   ol.id = "scheduleList";
   ol.style.marginBottom = "14px";
   if (list.length === 0) { ol.className = "empty"; ol.textContent = "아직 예약이 없어요"; }
-  list.forEach((slot, k) => ol.appendChild(slotRow(k + 1, slot, "")));
+  for (const [s, e, n] of list) {
+    const row = document.createElement("div"); row.className = "slot";
+    const tm = document.createElement("span"); tm.className = "tm"; tm.textContent = `${s}:00 ~ ${e}:00`;
+    const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = n;
+    const tg = document.createElement("span"); tg.className = "tg"; tg.textContent = `${e - s}시간`;
+    row.append(tm, nm, tg); ol.appendChild(row);
+  }
   wrap.appendChild(ol);
 
   // 9~21시 타임라인
@@ -757,27 +673,19 @@ function renderTimeline(room, day) {
 function doBook(ev) {
   if (ev) ripple(ev.currentTarget, ev);
   const room = val("bRoom"), day = val("bDay"), start = num("bStart"), end = num("bEnd"), name = val("bName");
-  const args = [room, day, start, end, name];
-  const res = call("book", args);
-  // 실패하면 explain.py에게 이유를 물어봄 (실패한 예약은 저장되지 않으므로 같은 상태에서 설명됨)
-  const why = res === false ? call("explain_book", args) : null;
+  const res = call("book", [room, day, start, end, name]);
   showResult("bookResult", res, "예약 성공", "예약 실패",
-    `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}~${end ?? "?"}시`, why);
-  renderSchedule("bookSched", room, day, { added: res === true ? [start, end, name] : null });
+    `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}~${end ?? "?"}시`);
+  renderSchedule("bookSched", room, day);
 }
 
 function doCancel(ev) {
   if (ev) ripple(ev.currentTarget, ev);
   const room = val("cRoom"), day = val("cDay"), start = num("cStart"), name = val("cName");
-  const args = [room, day, start, name];
-  const before = call("get_schedule", [room, day]);
-  const res = call("cancel", args);
-  // 실패하면 이유를 물어봄 (실패한 취소는 아무것도 바꾸지 않으므로 같은 상태에서 설명됨)
-  const why = res === false ? call("explain_cancel", args) : null;
-  const removed = res === true && Array.isArray(before) ? before.find(s => s[0] === start) : null;
+  const res = call("cancel", [room, day, start, name]);
   showResult("cancelResult", res, "취소 성공", "취소 실패",
-    `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}시 시작`, res === false ? why : null);
-  renderSchedule("cancelSched", room, day, { removed });
+    `${name || "(이름 없음)"} · ${room} · ${day} · ${start ?? "?"}시 시작`);
+  renderSchedule("cancelSched", room, day);
 }
 
 function doSchedule(ev) {
