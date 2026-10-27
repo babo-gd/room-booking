@@ -105,7 +105,9 @@
                     background: var(--c); color: #fff; font-size: .68rem; font-weight: 900; display: grid; place-items: center; animation: pop .3s var(--ez); }
 
   /* 요일 */
-  .days { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--fill); border-radius: 16px; padding: 4px; gap: 4px; }
+  .day.wk { color: var(--coral); }
+  .day.wk.on { color: var(--coral-ink); }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--fill); border-radius: 16px; padding: 4px; gap: 4px; }
   .day { border: 0; background: transparent; border-radius: 12px; padding: 10px 0; font-weight: 800; color: var(--t2); cursor: pointer;
          transition: background .2s var(--ez), color .2s, box-shadow .2s, transform .15s; }
   .day:active { transform: scale(.92); }
@@ -417,7 +419,8 @@
 let py = null;
 // 화면에 버튼으로 보여줄 목록일 뿐, 맞는지 틀린지는 solution.py가 판단함
 const ROOMS = [["A101", "A동 · 1층"], ["A102", "A동 · 1층"], ["B201", "B동 · 2층"]];
-const DAYS = ["월", "화", "수", "목", "금"];
+// 토·일도 고를 수 있게 둠 (예약이 되는지는 solution.py가 판단)
+const DAYS = ["월", "화", "수", "목", "금", "토", "일"];
 const HOURS = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
 
 // ---------- 파이썬(solution.py) 불러오기 ----------
@@ -503,7 +506,7 @@ function buildPickers() {
     const id = box.dataset.day;
     for (const d of DAYS) {
       const b = document.createElement("button");
-      b.type = "button"; b.className = "day"; b.textContent = d;
+      b.type = "button"; b.className = "day" + (d === "토" || d === "일" ? " wk" : ""); b.textContent = d;
       b.onclick = () => setInput(id, d);
       box.appendChild(b);
     }
