@@ -124,11 +124,46 @@
   .slot .tg { margin-left: auto; font-size: .74rem; font-weight: 700; color: var(--hero); background: #e8edff; padding: 3px 9px; border-radius: 999px; }
   .empty { text-align: center; padding: 22px; color: var(--t3); font-weight: 600; background: var(--fill); border-radius: 16px; }
 
-  .rules { margin-top: 22px; background: var(--card); border-radius: 22px; padding: 18px; box-shadow: var(--sh1); }
-  .rules ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
-  .rules li { display: flex; gap: 10px; font-size: .9rem; color: var(--t2); }
-  .rules li b { flex: 0 0 22px; height: 22px; border-radius: 7px; background: var(--fill); color: var(--hero);
-                display: grid; place-items: center; font-size: .75rem; }
+  /* ---------- TIP 카드 ---------- */
+  .tips { margin-top: 28px; }
+  .tips-head { display: flex; align-items: baseline; justify-content: space-between; }
+  .tips-head .q { margin-bottom: 4px; }
+  .tips-head span { font-size: .78rem; color: var(--t3); font-weight: 600; }
+  .tips-sub { font-size: .84rem; color: var(--t3); margin: 0 0 14px; }
+  .tip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .tip { position: relative; border: 0; padding: 0; background: none; cursor: pointer; perspective: 900px;
+         height: 150px; text-align: left; color: var(--t1); -webkit-tap-highlight-color: transparent;
+         transition: transform .18s var(--ez); }
+  .tip:active { transform: scale(.95); }
+  .tip-in { position: absolute; inset: 0; transform-style: preserve-3d; transition: transform .6s var(--ez); }
+  .tip.open .tip-in { transform: rotateY(180deg); }
+  .tip .face { position: absolute; inset: 0; border-radius: 20px; padding: 14px; overflow: hidden;
+               backface-visibility: hidden; -webkit-backface-visibility: hidden; display: flex; flex-direction: column; }
+  .tip .front { background: var(--card); border: 1.5px solid var(--line); box-shadow: var(--sh1);
+                transition: box-shadow .2s, border-color .2s; }
+  .tip:hover .front { border-color: var(--c); box-shadow: 0 10px 26px rgba(23,32,74,.10); }
+  .tip .front .ico { width: 40px; height: 40px; border-radius: 13px; background: var(--c); margin-bottom: auto;
+                     transition: transform .3s var(--ez); }
+  .tip:hover .front .ico { transform: rotate(-8deg) scale(1.06); }
+  .tip .front .ico svg { width: 21px; height: 21px; }
+  .tip .front strong { font-size: .98rem; font-weight: 800; letter-spacing: -.02em; }
+  .tip .front em { font-style: normal; font-size: .74rem; color: var(--t3); font-weight: 600; display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  .tip .front em::after { content: "↻"; font-size: .8rem; }
+  .tip .no { position: absolute; top: 12px; right: 14px; font-size: .74rem; font-weight: 800; color: var(--t3); }
+  .tip .back { transform: rotateY(180deg); background: var(--c); color: #fff; justify-content: center; }
+  .tip .back::before { content: ""; position: absolute; width: 120px; height: 120px; border-radius: 50%;
+                       right: -40px; top: -50px; background: rgba(255,255,255,.14); }
+  .tip .back b { font-size: .8rem; font-weight: 800; opacity: .85; margin-bottom: 6px; position: relative; }
+  .tip .back p { margin: 0; font-size: .86rem; font-weight: 600; line-height: 1.45; position: relative; }
+  .tip .back p mark { background: rgba(255,255,255,.25); color: #fff; border-radius: 6px; padding: 0 4px; }
+  .ripple { position: absolute; border-radius: 50%; pointer-events: none; transform: scale(0);
+            background: var(--c); opacity: .35; animation: ripple .6s var(--ez) forwards; z-index: 3; }
+  @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+  .tip.open::after { content: ""; position: absolute; inset: -3px; border-radius: 23px; pointer-events: none;
+                     box-shadow: 0 0 0 3px var(--c); opacity: 0; animation: glow .6s var(--ez) forwards; }
+  @keyframes glow { 40% { opacity: .5; } to { opacity: 0; } }
+  @media (max-width: 560px) { .tip-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (prefers-reduced-motion: reduce) { .tip-in, .tip { transition: none; } .ripple, .tip.open::after { display: none; } }
   .reset { display: block; margin: 20px auto 0; background: none; border: 0; color: var(--t3); font-weight: 600;
            text-decoration: underline; cursor: pointer; font-size: .86rem; }
   .foot { text-align: center; color: var(--t3); font-size: .76rem; margin-top: 14px; }
@@ -222,14 +257,11 @@
       <div class="sched" id="schedule"></div>
     </section>
 
-    <section class="rules">
+    <section class="tips">
       <span class="label">TIP</span>
-      <ul>
-        <li><b>1</b>강의실 A101 · A102 · B201, 월~금 9시~21시</li>
-        <li><b>2</b>한 번에 최대 3시간, 끝나는 시각에 바로 다음 예약 가능</li>
-        <li><b>3</b>한 사람은 하루 최대 2건 (강의실이 달라도 합산)</li>
-        <li><b>4</b>본인 예약만 취소할 수 있어요</li>
-      </ul>
+      <div class="tips-head"><p class="q">예약 전에 알아두세요</p><span id="tipCount">0 / 6 확인</span></div>
+      <p class="tips-sub">카드를 누르면 뒤집혀서 자세한 내용이 나와요</p>
+      <div class="tip-grid" id="tipGrid"></div>
     </section>
 
     <button class="reset" data-py disabled onclick="doReset()">전체 초기화 (예약 모두 지우기)</button>
@@ -397,7 +429,66 @@ function doReset() {
   ["bookSched", "cancelSched", "schedule"].forEach(id => $(id).innerHTML = "");
 }
 
+// ---------- TIP 카드 (화면 안내용, 예약 규칙 판단과는 무관) ----------
+const ICON = {
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  hour: '<path d="M6 3h12M6 21h12M7 3c0 5 10 5 10 9s-10 4-10 9M17 3c0 5-10 5-10 9"/>',
+  chain: '<path d="M4 7h7v10H4zM13 7h7v10h-7z"/><path d="M11 12h2"/>',
+  user: '<circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><path d="M17 8h4M19 6v4"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  num: '<path d="M9 4L7 20M17 4l-2 16M4 9h16M3 15h16"/>',
+};
+const TIPS = [
+  { c: "var(--hero)", i: "clock", t: "운영 시간", s: "언제 쓸 수 있나요?",
+    d: "<mark>A101 · A102 · B201</mark><br>월~금 <mark>9시~21시</mark>. 21시엔 모든 예약이 끝나야 해요." },
+  { c: "var(--sun)", i: "hour", t: "최대 3시간", s: "얼마나 길게?",
+    d: "한 번에 <mark>3시간까지</mark>.<br>10~13시는 OK, 9~13시는 안 돼요." },
+  { c: "var(--mint)", i: "chain", t: "연달아 예약", s: "바로 이어서?",
+    d: "10~12시 예약 뒤 <mark>12~13시</mark>는 바로 가능!<br>11~13시는 겹쳐서 안 돼요." },
+  { c: "#7c5cff", i: "user", t: "하루 2건", s: "몇 번까지?",
+    d: "한 사람은 <mark>하루 2건</mark>까지.<br>강의실이 달라도 합쳐서 세요." },
+  { c: "var(--burgundy)", i: "lock", t: "본인만 취소", s: "누가 취소해요?",
+    d: "예약한 <mark>이름과 같아야</mark> 취소돼요. 남의 예약은 취소할 수 없어요." },
+  { c: "var(--coral)", i: "num", t: "정시만 가능", s: "10시 반은요?",
+    d: "<mark>10시, 11시</mark>처럼 정시만 돼요. 10.5시 같은 시각은 거절돼요." },
+];
+const seen = new Set();
+function makeTips() {
+  const grid = $("tipGrid");
+  TIPS.forEach((tp, k) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "tip"; b.style.setProperty("--c", tp.c);
+    b.setAttribute("aria-pressed", "false");
+    b.innerHTML = `<div class="tip-in">
+        <div class="face front"><span class="no">0${k + 1}</span>
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[tp.i]}</svg></span>
+          <strong>${tp.t}</strong><em>${tp.s}</em></div>
+        <div class="face back"><b>TIP 0${k + 1} · ${tp.t}</b><p>${tp.d}</p></div>
+      </div>`;
+    b.addEventListener("click", e => {
+      // 누른 자리에서 물결 퍼지기
+      const r = b.getBoundingClientRect(), size = Math.max(r.width, r.height) * 2.2;
+      const w = document.createElement("span");
+      w.className = "ripple";
+      w.style.width = w.style.height = size + "px";
+      w.style.left = ((e.clientX || r.left + r.width / 2) - r.left - size / 2) + "px";
+      w.style.top = ((e.clientY || r.top + r.height / 2) - r.top - size / 2) + "px";
+      b.appendChild(w);
+      setTimeout(() => w.remove(), 650);
+      // 뒤집기
+      const open = !b.classList.contains("open");
+      b.classList.toggle("open", open);
+      b.setAttribute("aria-pressed", String(open));
+      if (e.isTrusted && navigator.vibrate) { try { navigator.vibrate(12); } catch (_) {} }
+      seen.add(k);
+      $("tipCount").textContent = `${seen.size} / ${TIPS.length} 확인`;
+    });
+    grid.appendChild(b);
+  });
+}
+
 makeChips();
+makeTips();
 boot();
 </script>
 </body>
